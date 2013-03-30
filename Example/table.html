@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+</head>
+<body>
+</body>
+<script type="text/javascript" src="whiskers.js"></script>
+<script type="text/javascript">
+var d = new Date().getTime();
+var o = [['15:00:25','11.25','1.17%','4050','456'],['14:57:01','-11.24','1.08%','220','25'],['14:56:58','-11.24','1.08%','113','13'],['14:56:52','-11.24','1.08%','13','1'],['14:56:46','11.24','1.08%','229','26'],['14:56:40','11.24','1.08%','278','31'],['14:56:37','-11.23','0.99%','57','6'],['14:56:31','11.24','1.08%','829','93'],['14:56:25','11.24','1.08%','5','0.56'],['14:56:22','-11.23','0.99%','230','26'],['14:56:13','11.24','1.08%','22','2'],['14:56:07','-11.23','0.99%','172','19'],['14:55:58','-11.23','0.99%','40','4']];
+
+var data = Whiskers.render('table>(thead>tr>(td.td1>{{=时间}}+td.td2>{{=成交价}}+td.td3>{{=成交量}}+td.td4>{{=成交额}} + td.td5 > {{=新增测试}})+tbody>tr[index={{=$index}}].{{=$bg}}[type=tr]*8>(td.td1>{{=$0}}+td.td2>{{=$1}}+td.td3.{{=$color}}>{{=$3}}+td.td4.{{=$color}}[name=test]>{{=$4}}+td.td5 > (div > (a>(span.test>{{=$1}}+em)+span>{{=测试}}) + div>{{=结束}})))',o,function(data,index){
+	var p = parseFloat(data[1]);
+	data[1] = Math.abs(p);
+	data['index'] = index;
+	data['bg'] = (index%2 == 1?'libg':'');
+	data['color'] = (p<0?'green':(p>0?'red':''));
+});
+document.body.appendChild(data);
+
+console.log('耗时:' + (new Date().getTime() - d) + 'ms')
+</script>
+</html>

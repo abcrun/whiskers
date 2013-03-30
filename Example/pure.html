@@ -1,0 +1,16 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+</head>
+<body>
+</body>
+<script type="text/javascript" src="whiskers.js"></script>
+<script type="text/javascript">
+var d = new Date().getTime();
+var data = Whiskers.render('ul>li*4>(a>(span>{{=First}}+em) + span>{{=Second}} + span>{{=Third}})')
+document.body.appendChild(data);
+console.log('耗时:' + (new Date().getTime() - d) + 'ms')
+</script>
+</html>
