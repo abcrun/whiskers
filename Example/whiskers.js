@@ -80,8 +80,9 @@
 		var template_arr,frags = document.createDocumentFragment();
 
 		if(!isFormated && !/\*\d/.test(selector) && data){
-			if(fn) fn();
+			if(fn) fn(data);
 			selector = dataFormat(selector,data);
+			console.log(selector)
 			isFormated = true;
 		}
 		template_arr = analysis(selector);
