@@ -1,5 +1,5 @@
 <h1>whiskers.js - A New Way To Deal With Template - selector styles template with javascript</h1>
-<p>There are plenty famous javascript template modules such as mustache.js,but they are all using the same style. The whiskers give you a new way to think about template. If you are familiar with css or jquery selector, you will find that whiskers is easy to generate html</p>
+<p>There are many famous javascript template modules, but they are all using the same style. The whiskers give you a new way to think about template. If you are familiar with css or jquery selector, you will find that whiskers is easy to generate html</p>
 <p>Yes,You are clever. The whiskers is using selector style as the template. More information about <a href="http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#selectors" target="_blank"><strong>CSS SLECTOR</strong></a></p>
 <h2>Where to use it</h2>
 <p>You can use it any where you can use javascript</p>
@@ -10,10 +10,10 @@
 <p>
 Here is an example about template. We use Selector API styles. <strong>ul#id[name=value]>li.classname*2>(a+span)</strong>
 The repeat tag symbol <strong>*2</strong> should at last behind all attributes
-It is a template stands for:
+The template stands for:
 <ul id="id" name="value">
-	<li class="className">
-		<a></a>
+			<li class="className">
+				<a></a>
 		<span></span>
 	</li>
 	<li class="className">
