@@ -11,20 +11,16 @@
 Here is an example about template. We use Selector API styles. <strong>ul#id[name=value]>li.classname*2>(a+span)</strong>
 The repeat tag symbol <strong>*2</strong> should at last behind all attributes
 It is a template stands for:
-<pre>
-	<code>
-	<ul id="id" name="value">
-		<li class="className">
-			<a></a>
-			<span></span>
-		</li>
-		<li class="className">
-			<a></a>
-			<span></span>
-		</li>
-	</ul>
-	</code>
-</pre>
+<ul id="id" name="value">
+	<li class="className">
+		<a></a>
+		<span></span>
+	</li>
+	<li class="className">
+		<a></a>
+		<span></span>
+	</li>
+</ul>
 The whiskers add data to the html elment use <strong>{{=data}}</strong>. For example: div>{{=Hello World}},It will generate the code below:
 <code><div>Hello World</div></code>
 If we need to fill data to the template,the whiskers use <strong>{{=$}}</strong>
@@ -34,41 +30,29 @@ If we need to fill data to the template,the whiskers use <strong>{{=$}}</strong>
 <p>Below are some examples how to use Class.js</p>
 <strong>#demo1</strong>
 <pre>
-	<code>
-		var data = [1,2,3];
-		var template = 'ul>li*3>({{=Data:}} + {{=$0}})';
-		var output = Whiskers.render(template,data)
-	</code>
+	<code>var data = [1,2,3];
+	var template = 'ul>li*3>({{=Data:}} + {{=$0}})';
+	var output = Whiskers.render(template,data)</code>
 </pre>
 <p>Output:</p>
-<pre>
-	<code>
-	<ul>
-		<li>Data:1</li>
-		<li>Data:2</li>
-		<li>Data:3</li>
-	</ul>
-	</code>
-</pre>
+<ul>
+	<li>Data:1</li>
+	<li>Data:2</li>
+	<li>Data:3</li>
+</ul>
 <strong>#demo2</strong>
 <pre>
-	<code>
-	var data = [[1,2,3],[4,5,6]];
+	<code>var data = [[1,2,3],[4,5,6]];
 	var template = 'ul>li.{{=$clss}}*2>(span[name={{=$value}}]>{{=$0}} + span>{{=$1}} + span>{{=$2}})';
 	var fn = function(data,index){
 		data['clss'] = 'index' + index;
 		data['value'] = 'attributes';
 	}
-	var output = Whiskers.render(template,data,fn)	
-	</code>
+	var output = Whiskers.render(template,data,fn)</code>
 </pre>
 <p>Output:</p>
-<pre>
-	<code>
-		<ul>
-			<li class="index0"><span name="attributes">1</span><span>2</span><span>3</span></li>
-			<li class="index1"><span name="attributes">4</span><span>5</span><span>6</span></li>
-		</ul>
-	</code>
-</pre>
+<ul>
+	<li class="index0"><span name="attributes">1</span><span>2</span><span>3</span></li>
+	<li class="index1"><span name="attributes">4</span><span>5</span><span>6</span></li>
+</ul>
 <p>More examples to see Example directory</p>
