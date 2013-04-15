@@ -32,6 +32,11 @@ More information about [**CSS SLECTOR**](http://www.w3.org/TR/2011/REC-css3-sele
 - `{{=Hello World}}` -- text node
 - `{{=$abc}}` -- $abc is the variable
 
+###### variable (变量)
+`$name`,`$.name` and `$[name]` stand for the same variable.
+
+**name** is the *index* of an array or the *key* in an object. 
+
 ## Examples (实例)
 ###### template: string
 `var template = div#wrapper>ul.lists[data-type=news]>li*2>span>{{=Hello World}}`
