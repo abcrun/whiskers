@@ -1,8 +1,8 @@
 {
   "name": "whiskers",
   "description": "selector styles template with javascript - A New Way To Deal With Template",
-  "version": "0.1.0",
-  "keywords": ["whiskers","template","templates","templating","selector","Javascript"],
+  "version": "0.2.0",
+  "keywords": ["whiskers","template","theme","templates","templating","selector","Javascript"],
   "author": "Hongbo Yang <abcrun@gmail.com>",
   "repository": {
     "type": "git",

@@ -9,8 +9,8 @@
 <script type="text/javascript" src="whiskers.js"></script>
 <script type="text/javascript">
 var d = new Date().getTime();
-var o = [10,11,12];
-var data = Whiskers.render('div>a>{{=$[2]}}+span>{{=$[1]}}+font>{{=测试}}+span>{{=$[0]}}',o)
+var o = [[10,11,12],['a','b','c']];
+var data = Whiskers.render('(div>a>{{=$[2]}}+span>{{=$[1]}}+font>{{=测试}}+span>{{=$[0]}}) + (div>(span>{{=$[0]}}+span>{{=$[2]}}))',o)
 document.body.appendChild(data);
 console.log('耗时:' + (new Date().getTime() - d) + 'ms')
 </script>

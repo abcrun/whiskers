@@ -1,15 +1,23 @@
 /**
+* @file whiskers.js
 * @brief selector styles template with javascript - A New Way To Deal With Template
 * @author Hongbo Yang <abcrun@gmail.com>
 */
 
-(function(exports){
+(function(name,factory){
+	if(typeof define === 'function' && define.amd) define(factory);//AMD
+	else if(typeof module === 'object' && module.exports) module.exports = factory();//CommonJS
+	else this[name] = factory();//Global
+})('Whiskers',function(){
 	//Template RegExp Unit
-	var TEMPLATE = /([^\(\)\+]+)?(?:$|(^(?!>)[^\(\)\+]+\+.+$|\(.+\)$))/;
+	var TEMPLATE = /^\s*([^\+\(\)]+)\s*>\s*((?:[^>\(\)]+|\(.+\)))\s*$/;
 	var	NODE = /^((?:[\w\u00c0-\uFFFF\-]|\\.)+)?(\{\{=([^\{\}]+)\}\})?/,
 		ID = /#((?:[\w\u00c0-\uFFFF\-]|\\.)+)/,
 	    CLASS = /\.(?:[\w\u00c0-\uFFFF\-\{=\$\}]|\\.)+/g,
 		ATTR = /\[\s*(?:[\w\u00c0-\uFFFF\-]|\\.)+\s*=\s*[^\[\]]+\]/g;
+	var varReg = /\{\{=\$((?:[\w\u00c0-\uFFFF\-\[\]\.]|\\.)+)\}\}/,
+		mutiReg = /\*\d/,
+		braceReg = /(?:^\s*\(\s*|\s*\)\s*$)/g;
 	//Siblings Analysis
 	var analysis = function(str){
 		var length = str.length,
@@ -65,10 +73,15 @@
 	}
 	//Fill Datas
 	var dataFormat = function(html,data,isFull){
-		var varReg = isFull?/\{\{=\$((?:[\w\u00c0-\uFFFF\-]|\\.)+)\}\}/g:/\$((?:[\w\u00c0-\uFFFF\-]|\\.)+)/g;
+		var varReg = isFull?/\{\{=\$((?:[\w\u00c0-\uFFFF\-\[\]\.\*]|\\.)+)\}\}/g:/\$((?:[\w\u00c0-\uFFFF\-\[\]\.\*]|\\.)+)/g;
 		if(varReg.test(html)){
 			html = html.replace(varReg,function($0,$1){
-				var results = data[$1];
+				var keys = $1.match(/[^\[\]\.]+/g),results = data;
+				if(keys){
+					while(keys.length) results = data[keys.shift()]
+				}else{
+					results = data[$1];
+				}
 				if(typeof results == 'undefined') results = data;
 				return results;
 			})
@@ -76,34 +89,45 @@
 		return html;
 	}
 
-	var template = function(selector,data,fn,isFormated){
+	var whiskers = function(selector,data,fn){
+		var template_arr = TEMPLATE.test(selector);
+		if(template_arr){
+			return template(selector,data,fn);
+		}else{
+			var template_arr = analysis(selector),frags = document.createDocumentFragment();
+			for(var i = 0;i < template_arr.length;i++){
+				var template_str = template_arr[i],sData = null;
+				if(data && (mutiReg.test(template_str) || braceReg.test(template_str))) sData = data[i];
+				template_str = template_str.replace(braceReg,'');
+				frags.appendChild(template(template_str,sData || data,fn));
+			}
+			return frags;
+		}
+	};
+	var template = function(selector,data,fn,isDesc){
 		var template_arr,frags = document.createDocumentFragment();
 
-		if(!isFormated && !/\*\d/.test(selector) && data){
+		if(!mutiReg.test(selector) && !isDesc && varReg.test(selector) && data){
 			if(fn) fn(data);
 			selector = dataFormat(selector,data);
-			console.log(selector)
-			isFormated = true;
 		}
 		template_arr = analysis(selector);
 
 		for(var i = 0; i < template_arr.length;i++){
 			var template_str = template_arr[i],
-			    matches = TEMPLATE.exec(template_str);
+			    matches = TEMPLATE.exec(template_str),
+				ancestor = descendant = null;
 
-			if(!matches) return;
-			var ancestor = matches[1]?matches[1].replace(/>\s*$/,''):null,descendant = matches[2];
-			if(descendant){
-				isFormated = true;
-				descendant = template(descendant.replace(/(?:^\(|\)$)/g,''),data,fn,isFormated);
-			}
+			if(!matches) ancestor = template_str;
+			else{ancestor = matches[1];descendant = matches[2]}
+
+			if(descendant) descendant = template(descendant.replace(braceReg,''),data,fn,true);
 			if(ancestor){
 				var ancestor_arr = ancestor.split('>'),frg = descendant || document.createDocumentFragment();
 				while(ancestor_arr.length){
 					var ancestor_cur = ancestor_arr.pop(),
 					    groups = ancestor_cur.split('*'),
 						node = groups[0],times = groups[1] || 1,
-						hasVarReg = /{\{=\$([^\{\}]+)\}\}/g,
 						index = 0;
 
 					ancestor = createNode(node);
@@ -111,7 +135,7 @@
 					if(times == 1){
 						frg.appendChild(ancestor);
 					}else{
-						var tag = ancestor.nodeName,html = ancestor.innerHTML,hasAttrVar = hasVarReg.test(node),hasConVar = hasVarReg.test(html),clone;
+						var tag = ancestor.nodeName,html = ancestor.innerHTML,hasAttrVar = varReg.test(node),hasConVar = varReg.test(html),clone = null;
 						while(index != times){
 							clone = document.createElement(tag);
 							if(data && (hasAttrVar || hasConVar)){
@@ -149,12 +173,11 @@
 		}
 		return frags;
 	}
-	
+
 	//Basic Information
 	var Whiskers = {};
-	Whiskers.version = '0.1.0';
-	Whiskers.author = 'abcrun@gmail.com';
-	Whiskers.render = template;
+	Whiskers.version = '0.1.1';
+	Whiskers.render = whiskers;
 
-	exports.Whiskers = Whiskers;
-})(this)
+	return Whiskers;
+})
