@@ -93,3 +93,6 @@ Output:
 
 > However `span>$0 + span>$1` with data `[1,2]` needn't to be splited.
 
+
+**Notice**:Compatible with AMD and CommonJS
+
