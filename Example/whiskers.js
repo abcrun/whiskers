@@ -11,13 +11,13 @@
 })('Whiskers',function(){
 	//Template RegExp Unit
 	var TEMPLATE = /^\s*([^\+\(\)]+)\s*>\s*((?:[^>\(\)]+|\(.+\)))\s*$/;
-	var	NODE = /^((?:[\w\u00c0-\uFFFF\-]|\\.)+)?(\{\{=([^\{\}]+)\}\})?/,
-		ID = /#((?:[\w\u00c0-\uFFFF\-]|\\.)+)/,
+	var NODE = /^((?:[\w\u00c0-\uFFFF\-]|\\.)+)?(\{\{=([^\{\}]+)\}\})?/,
+	    ID = /#((?:[\w\u00c0-\uFFFF\-]|\\.)+)/,
 	    CLASS = /\.(?:[\w\u00c0-\uFFFF\-\{=\$\}]|\\.)+/g,
-		ATTR = /\[\s*(?:[\w\u00c0-\uFFFF\-]|\\.)+\s*=\s*[^\[\]]+\]/g;
-	var varReg = /\{\{=\$((?:[\w\u00c0-\uFFFF\-\[\]\.]|\\.)+)\}\}/,
-		mutiReg = /\*\d/,
-		braceReg = /(?:^\s*\(\s*|\s*\)\s*$)/g;
+	    ATTR = /\[\s*(?:[\w\u00c0-\uFFFF\-]|\\.)+\s*=\s*[^\[\]]+\]/g;
+	var varReg = /\{\{=\$((?:[\w\u00c0-\uFFFF\-\[\]\.\*]|\\.)+)\}\}/,
+	    mutiReg = /\*\d/,
+	    braceReg = /(?:^\s*\(\s*|\s*\)\s*$)/g;
 	//Siblings Analysis
 	var analysis = function(str){
 		var length = str.length,
@@ -90,19 +90,15 @@
 	}
 
 	var whiskers = function(selector,data,fn){
-		var template_arr = TEMPLATE.test(selector);
-		if(template_arr){
-			return template(selector,data,fn);
-		}else{
-			var template_arr = analysis(selector),frags = document.createDocumentFragment();
-			for(var i = 0;i < template_arr.length;i++){
-				var template_str = template_arr[i],sData = null;
-				if(data && (mutiReg.test(template_str) || braceReg.test(template_str))) sData = data[i];
-				template_str = template_str.replace(braceReg,'');
-				frags.appendChild(template(template_str,sData || data,fn));
-			}
-			return frags;
+		var template_arr = analysis(selector),groups = template_arr.length,frags = document.createDocumentFragment();
+		if(groups == 1) return template(selector,data,fn);
+		for(var i = 0;i < template_arr.length;i++){
+			var template_str = template_arr[i],sData = null;
+			if(data && (mutiReg.test(template_str) || braceReg.test(template_str))) sData = data[i];
+			if(/^\s*\(.+\)\s*$/.test(template_str)) template_str = template_str.replace(braceReg,'');
+			frags.appendChild(template(template_str,sData || data,fn));
 		}
+		return frags;
 	};
 	var template = function(selector,data,fn,isDesc){
 		var template_arr,frags = document.createDocumentFragment();
@@ -176,7 +172,7 @@
 
 	//Basic Information
 	var Whiskers = {};
-	Whiskers.version = '0.1.1';
+	Whiskers.version = '0.2.0';
 	Whiskers.render = whiskers;
 
 	return Whiskers;
