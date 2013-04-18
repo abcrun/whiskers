@@ -7,3 +7,8 @@
 	* Add supports to complex template with muti datas.
 	* Add supports to AMD and CommonJS.
 	* optimize some RegExp.
+
+### Version (0.2.1)
+
+	* Optimize variable and datas.
+

@@ -10,7 +10,7 @@
 <script type="text/javascript">
 var d = new Date().getTime();
 var o = [[10,11,12],['a','b','c']];
-var data = Whiskers.render('(div>a>{{=$[2]}}+span>{{=$[1]}}+font>{{=测试}}+span>{{=$[0]}}) + (div>(span>{{=$[0]}}+span>{{=$[2]}}))',o)
+var data = Whiskers.render('(div>a>{{=$[0][2]}}+span>{{=$[0][1]}}+font>{{=测试}}+span>{{=$[0][0]}}) + (div>(span>{{=$[1][0]}}+span>{{=$[1][2]}}))',o)
 document.body.appendChild(data);
 console.log('耗时:' + (new Date().getTime() - d) + 'ms')
 </script>

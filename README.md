@@ -17,7 +17,7 @@ More information about [**CSS SLECTOR**](http://www.w3.org/TR/2011/REC-css3-sele
 ### Syntax (语法)
 	Whiskers.render(template,data,fn)
 ### Parameters (参数)
-###### render(template,data,fn)
+###### .render(template,data,fn)
 - `template:Required` -- A CSS Selector Style string stands for template. More detail below.
 - `data:Optional` -- The Data To be Filled.
 - `fn:Optional` -- A function excutes when rendering.
@@ -30,12 +30,19 @@ More information about [**CSS SLECTOR**](http://www.w3.org/TR/2011/REC-css3-sele
 - `+` -- siblings
 - `*` -- node repeat times
 - `{{=Hello World}}` -- text node
-- `{{=$abc}}` -- $abc is the variable
+- `{{=$.abc}}` -- $abc is the variable
 
 ###### variable (变量)
-`$name`,`$.name` and `$[name]` stand for the same variable.
+`$.name` and `$[name]` are standing for the same variable.
 
 **name** is the *index* of an array or the *key* in an object. 
+
+	{
+		title:'whiskers',
+		keywords:['whiskers','template']
+	}
+
+`$.keywords.[0]` and `$['keywords'][0]` are standing for the string 'whiskers'
 
 ## Examples (实例)
 ###### template: string
@@ -55,10 +62,10 @@ Add Datas to the template:
 
 
 	Whiskers.render(
-		'div>(span>{{=$0}} + span.$className>{{=$1}}) + span>{{=$2}})',
+		'div>(span>{{=$.0}} + span.{{=$.className}}>{{=$.1}} + span>{{=$.2}})',
 		[0,1,2],
-		function(data,index){
-			$['className'] = 'libg';
+		function(data){
+			data['className'] = 'libg';
 		}
 	)
 	<div>
@@ -70,10 +77,12 @@ Add Datas to the template:
 Complex Example:
 
 	var data = [[1,2,3],[4,5,6]];
-	var template = 'ul>li.{{=$clss}}*2>(span[name={{=$value}}]>{{=$0}} + span>{{=$1}} + span>{{=$2}})';
-	var fn = function(data,index){
-		data['clss'] = 'index' + index;
-		data['value'] = 'attributes';
+	var template = 'ul>li*2.{{=$[*][clss]}}>(span[name={{=$[*][value]}}]>{{=$[*][0]}} + span>{{=$[*][1]}} + span>{{=$[*][2]}})';
+	var fn = function(data){
+		for(var i = 0; i < data.length; i++){
+			data[i]['clss'] = 'index' + i;
+			data[i]['value'] = 'attributes';
+		}
 	}
 	var output = Whiskers.render(template,data,fn)
 	
@@ -85,18 +94,13 @@ Output:
 	</ul>
 	
 **Notice**:
-- `li.list*3` -- Node repeat times should be placed at the last of the corresponding node. `li*3.list` is invalidate.
-- `template` -- Strongly recommended to split a complex template into small units when `data` or `fn` is needed. For examples:
+- `template` -- Strongly recommended to split a complex template into small units. For examples:
 
-> `var template = 'ul>li*2>(span>{{=$1}}+span>{{=$0}}+span>{{=$2}}) + ul>li*2>(span>{{=$1}}+span>{{=$0}}+span>{{=$2}})';`
-> `var data = [[[1,2,3],[4,5,6]],[[7,8,9],[10,11,12]]];`
+> `var template = 'ul>li*2>(span>{{=$.*.1}}+span>{{=$.*.0}}+span>{{=$.*.2}}) + ul>li*2>(span>{{=$.*.1}}+span>{{=$.*.0}}+span>{{=$.*.2}})';`
 
 > It is better to split like this:
 
-> `li*2>(span>{{=$1}}+span>{{=$0}}+span>{{=$2}})` with data `[[1,2,3],[4,5,6]]`
-> `li*2>(span>{{=$1}}+span>{{=$0}}+span>{{=$2}})` with data `[[7,8,9],[10,11,12]]`
-
-> However `span>$0 + span>$1` with data `[1,2]` needn't to be splited.
+> `li*2>(span>{{=$.*.1}}+span>{{=$.*.0}}+span>{{=$.*.2}})` and `li*2>(span>{{=$.*.1}}+span>{{=$.*.0}}+span>{{=$.*.2}})`
 
 
 **Notice**:Compatible with AMD and CommonJS
