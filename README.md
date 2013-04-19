@@ -42,7 +42,7 @@ More information about [**CSS SLECTOR**](http://www.w3.org/TR/2011/REC-css3-sele
 		keywords:['whiskers','template']
 	}
 
-`$.keywords.[0]` and `$['keywords'][0]` are standing for the string 'whiskers'
+`$.keywords.0` and `$['keywords'][0]` are standing for the string 'whiskers'
 
 ## Examples (实例)
 ###### template: string
