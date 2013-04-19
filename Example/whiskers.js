@@ -145,7 +145,7 @@
 									setAttribute(results,clone);
 								}
 								if(hasConVar){
-									var fhtml = html.replace(/\*/g,index);
+									var fhtml = html.replace(/(\.|\[)\*(\.|\])/g,'$1' + index + '$2');
 									results = dataFormat(fhtml,data,true);
 									if(window.ActiveXObject && tag.toLowerCase() == 'tr'){//Table Elements Are ReadOnly In IE Except TD
 										var div = document.createElement('div');
