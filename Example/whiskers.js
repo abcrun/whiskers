@@ -1,7 +1,8 @@
 /**
-* @file whiskers.js
-* @brief selector styles template with javascript - A New Way To Deal With Template
-* @author Hongbo Yang <abcrun@gmail.com>
+* Javascript Templating Engine (Selector Styles) - A New Way To Deal With Templates 
+* The MIT License - Copyright (c) Hongbo Yang <abcrun@gmail.com>
+* Repository - https://github.com/abcrun/whiskers.git
+* Version - 0.2.1
 */
 
 (function(name,factory){
@@ -176,7 +177,6 @@
 
 	//Basic Information
 	var Whiskers = {};
-	Whiskers.version = '0.2.1';
 	Whiskers.render = whiskers;
 
 	return Whiskers;
