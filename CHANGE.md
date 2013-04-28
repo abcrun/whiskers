@@ -12,3 +12,7 @@
 
 	* Optimize variable and datas.
 
+### Version (0.2.2)
+
+	* Merge the function `whiskers` and `template`.
+	* Fix the bug of setting attributes.
