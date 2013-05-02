@@ -46,13 +46,13 @@ More information about [**CSS SLECTOR**](http://www.w3.org/TR/2011/REC-css3-sele
 
 ## Examples (实例)
 ###### template: string
-`var template = div#wrapper>ul.lists[data-type=news]>li*2>span>{{=Hello World}}`
+`var template = 'div#wrapper>ul.lists[data-type=news]>li*2>span>{{=Hello World}}'`
 
 ###### Whiskers.render(template,data,fn)
 `Whiskers.render(template)`
 
 	<div id="wrapper">
-		<ul id="lists" data-type="news">
+		<ul class="lists" data-type="news">
 			<li><span>Hello World</span></li>
 			<li><span>Hello World</span></li>
 		</ul>
