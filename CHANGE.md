@@ -4,7 +4,7 @@
 
 ### Version (0.2.0)
 
-	* Add supports to complex template with muti datas.
+	* Add supports to templates groups.
 	* Add supports to AMD and CommonJS.
 	* optimize some RegExp.
 
@@ -16,3 +16,8 @@
 
 	* Merge the function `whiskers` and `template`.
 	* Fix the bug of setting attributes.
+
+### Version (0.3.0)
+
+	* Optimize the RegExp.
+	* Optimize attributes setting.

@@ -1,8 +1,8 @@
 /**
 * Javascript Templating Engine (Selector Styles) - A New Way To Deal With Templates 
-* The MIT License - Copyright (c) Hongbo Yang <abcrun@gmail.com>
+* The MIT License - Copyright (c) 2013 Hongbo Yang <abcrun@gmail.com>
 * Repository - https://github.com/abcrun/whiskers.git
-* Version - 0.2.2
+* Version - 0.3.0
 */
 
 (function(name,factory){
@@ -10,14 +10,23 @@
 	else if(typeof module === 'object' && module.exports) module.exports = factory();//CommonJS
 	else this[name] = factory();//Global
 })('Whiskers',function(){
-	//Template RegExp Unit
-	var TEMPLATE = /^\s*([^\+\(\)]+)\s*>\s*(?:([^>\(\)]+)|(\(.+\)))\s*$/;
-	var NODE = /^((?:[\w\u00c0-\uFFFF\-]|\\.)+)?(\{\{=([^\{\}]+)\}\})?/,
-	    ID = /#((?:[\w\u00c0-\uFFFF\-]|\\.)+)/,
-	    CLASS = /\.(?:(?:[\w\u00c0-\uFFFF\-]|\\.)+|\{\{=\$?[^\$\{\}]+\}\})/g,
-	    ATTR = /\[\s*(?:[\w\u00c0-\uFFFF\-]|\\.)+\s*=\s*(?:\{\{=\$(?:[\w\u00c0-\uFFFF\-\.\[\]\*]|\\.)+\}\}|(?:[\w\u00c0-\uFFFF\-\.\[\]\*]|\\.)+)\s*\]/g;
-	var varReg = /\{\{=\$((?:[\w\u00c0-\uFFFF\-\[\]\.\*]|\\.)+)\}\}/,
-	    braceReg = /(?:^\(\s*|\s*\)$)/g;
+	// Whitespace characters http://www.w3.org/TR/css3-selectors/#whitespace
+	var whitespace = '[\\x20\\t\\r\\n\\f]';
+	// http://www.w3.org/TR/css3-syntax/#characters
+	var characterEncoding = '(?:\\\\.|[\\w-]|[^\\x00-\\xa0])+';
+
+	var token = '\\{\\{=(\\$?' + characterEncoding.replace('w','w\\[\\]\\.\\*\'"') + ')\\}\\}';
+	var varReg = new RegExp(token.replace('?',''),'g');
+	var varCon = new RegExp('(\\$' + characterEncoding.replace('w','w\\[\\]\\.\\*\'"') + ')','g');
+
+	var ID = new RegExp('#(' + characterEncoding + ')');
+	var CLASS = new RegExp('\\.(' + characterEncoding + '|' + token  + ')');
+	var ATTR = new RegExp('\\[' + whitespace + '*(' + characterEncoding + ')' + whitespace + '*=' + whitespace + '*((?:' + token.replace('?','') + '|' + characterEncoding.replace('w','w\\."\'') +'))' + whitespace + '*\\]');
+	var rBracket = new RegExp('^' + whitespace + '*\\(((?:\\\\.|[^\\\\])*)\\)' + whitespace + '*');
+
+	var TEMPLATE = new RegExp('^' + whitespace + '*' + '(' + '(?:\\\\.|[^\\\\()])+' + ')' + whitespace + '*>' + whitespace + '*(' + '(?:\\\\.|[^\\\\()>])+|\\((?:\\\\.|[^\\\\])+\\)' + ')' + whitespace + '*$');
+	var NODE = new RegExp('^(' + characterEncoding + ')|(' + token + ')');
+
 	//Siblings Analysis
 	var analysis = function(str){
 		var length = str.length,
@@ -39,62 +48,43 @@
 	}
 	//Fill Datas
 	var dataFormat = function(html,data,isFull){
-		var varConReg = isFull?/\{\{=\s*\$((?:[\w\u00c0-\uFFFF\-\[\]\.\*]|\\.)+)\s*\}\}/g:/\$((?:[\w\u00c0-\uFFFF\-\[\]\.\*]|\\.)+)/g;
+		var varConReg = isFull ? varReg : varCon;
 		return (html.replace(varConReg,function($0,$1){
 			var keys = $1.match(/[^\[\]\.]+/g),results;
 			if(keys) while(keys.length) results = (results || data)[keys.shift()];
 			return (!/(?:undefined|null)/.test(results) ? results : $0);
 		}))
 	}
-	//Create Node
-	var createNode = function(str){
-		var nodes = NODE.exec(str),elm = nodes[1],txt = nodes[3];
-		if(elm){
-			node = document.createElement(elm);
-			setAttribute(str,node);
-		}else if(txt){
-			if(nodes[3].indexOf('$') > -1) txt = nodes[2];
-			node = document.createTextNode(txt);
-		}
-		return node;
-	}
 	//Set Node Attributes
 	var setAttribute = function(str,tag){
-		var id = ID.exec(str),attrs = str.match(ATTR),classes,naReg = /\{\{=((?:[\w\u00c0-\uFFFF\-]|\\.)+)\}\}/;
-		if(id) tag.id = id[1]; 
-		if(attrs){
-			var simpleAttr = /\[\s*((?:[\w\u00c0-\uFFFF\-]|\\.)+)\s*=(.+)\]/;
-			for(var i = 0;i < attrs.length;i++){
-				var attr = simpleAttr.exec(attrs[i]),name = attr[1],value = attr[2],value_arr = naReg.exec(value);
-				if(value_arr) value = value_arr[1];
+		var ids = ID.exec(str),attrs,classes,clsArr = [];
+		if(ids) tag.id = ids[1];
+		while(str != ''){
+			if(attrs = ATTR.exec(str)){
+				var name = attrs[1],value = attrs[2];
 				tag.setAttribute(name,value);
+				str = str.replace(ATTR,'');
+			}else if(classes = CLASS.exec(str)){
+				clsArr.push(classes[1]);
+				str = str.replace(CLASS,'');
+			}else{
+				str = '';
 			}
-			str = str.replace(ATTR,'');//Remove Attributes String As It May Include Dot Symbol Such As 'url=www.pkmyself.com' Which May Conflict With Class RegExp
+			if(clsArr.length) tag.className = clsArr.join(' ');
 		}
-		classes = str.match(CLASS);
-		if(classes){
-			var clArr = [];
-			for(var j = 0;j < classes.length;j++){
-				var clss = classes[j],clss_arr = naReg.exec(clss);
-				if(clss_arr) clss = clss_arr[1];
-				else clss = clss.replace('.','');
-				clArr.push(clss)
-			}
-			tag.className = clArr.join(' ');
-		} 
-		return tag;
+		return tag;		
 	}
 	
 	var template = function(selector,data,fn,isDesc){
-		var template_arr = analysis(selector),frags = document.createDocumentFragment();
+		var template_arr,frags = document.createDocumentFragment();
 		if(!isDesc && data && fn) fn(data);
 		if(varReg.test(selector) && !/\*/.test(selector) && data) selector = dataFormat(selector,data);
 
 		template_arr = analysis(selector);
 		for(var i = 0; i < template_arr.length;i++){
 			var template_str = template_arr[i];
-			if(/^\s*\(.+\)\s*$/.test(template_str)){
-				frags.appendChild(template(template_str.replace(braceReg,''),data,fn,true));
+			if(rBracket.test(template_str)){
+				frags.appendChild(template(template_str.replace(rBracket,'$1'),data,fn,true));
 				continue;
 			}
 			var matches = TEMPLATE.exec(template_str),
@@ -102,39 +92,46 @@
 
 			if(!matches) ancestor = template_str;
 			else{
-				if(matches[3]){
-					ancestor = matches[1];
-					descendant = matches[3];
-				}else{
-					ancestor = template_str;
-				}
+				ancestor = matches[1];
+				descendant = matches[2];
 			}
 
-			if(descendant) descendant = template(descendant.replace(braceReg,''),data,fn,true);
+			if(descendant) descendant = template(descendant.replace(rBracket,'$1'),data,fn,true);
 
 			if(ancestor){
 				var ancestor_arr = ancestor.split('>'),frg = descendant || document.createDocumentFragment();
 				while(ancestor_arr.length){
 					var ancestor_cur = ancestor_arr.pop(),
-						node,times = 1,index = 0;
+						node,tNode,attrStr = '',times = 1,index = 0;
 
 					node = ancestor_cur.replace(/\*(\d+)/,function($0,$1){
 						if($1) times = parseInt($1);
 						return '';
 					})
-					ancestor = createNode(node);
+					if(tNode = NODE.exec(node)){
+						if(tNode[1]){
+							ancestor = document.createElement(tNode[1]);
+							ancestor.appendChild(frg);
 
-					if(ancestor.nodeName != '#text') ancestor.appendChild(frg)
+							attrStr = node.replace(new RegExp('^' + whitespace + '*' + tNode[1]),'');
+							if(attrStr) setAttribute(attrStr,ancestor);
+						}else{
+							var txt = tNode[2];
+							if(!varReg.test(txt)) txt = tNode[3];
+							ancestor = document.createTextNode(txt);
+						}
+					}
+
 					if(times == 1){
 						frg.appendChild(ancestor);
 					}else{
-						var tag = ancestor.nodeName,html = ancestor.innerHTML,hasAttrVar = varReg.test(node),hasConVar = varReg.test(html),clone = null;
+						var tag = ancestor.nodeName,html = ancestor.innerHTML,hasAttrVar = varReg.test(attrStr),hasConVar = varReg.test(html),clone = null;
 						while(index != times){
 							if(data && (hasAttrVar || hasConVar)){
 								var results;
 								clone = document.createElement(tag);
 								if(hasAttrVar){
-									var fnode = node.replace(/\*/g,index);
+									var fnode = attrStr.replace(/\*/g,index);
 									results = dataFormat(fnode,data,true);
 									setAttribute(results,clone);
 								}

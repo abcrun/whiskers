@@ -6,10 +6,10 @@
 </head>
 <body>
 </body>
-<script type="text/javascript" src="whiskers.js"></script>
+<script type="text/javascript" src="../whiskers.js"></script>
 <script type="text/javascript">
 var d = new Date().getTime();
-var data = Whiskers.render('ul>li*4>(a>(span>{{=First}}+em) + span>{{=Second}} + span>{{=Third}})')
+var data = Whiskers.render('ul>li*4>(a>(span>{{=First}}+em) + span[url="www.sohu.com"]>{{=Second}} + span>{{=Third}})')
 document.body.appendChild(data);
 console.log('耗时:' + (new Date().getTime() - d) + 'ms')
 </script>
