@@ -16,6 +16,7 @@
 	var characterEncoding = '(?:\\\\.|[\\w-]|[^\\x00-\\xa0])+';
 
 	var token = '\\{\\{=(\\$?' + characterEncoding.replace('w','w\\[\\]\\.\\*\'"') + ')\\}\\}';
+	var varRegTest = new RegExp(token.replace('?',''));
 	var varReg = new RegExp(token.replace('?',''),'g');
 	var varCon = new RegExp('(\\$' + characterEncoding.replace('w','w\\[\\]\\.\\*\'"') + ')','g');
 
@@ -25,7 +26,7 @@
 	var rBracket = new RegExp('^' + whitespace + '*\\(((?:\\\\.|[^\\\\])*)\\)' + whitespace + '*');
 
 	var TEMPLATE = new RegExp('^' + whitespace + '*' + '(' + '(?:\\\\.|[^\\\\()])+' + ')' + whitespace + '*>' + whitespace + '*(' + '(?:\\\\.|[^\\\\()>])+|\\((?:\\\\.|[^\\\\])+\\)' + ')' + whitespace + '*$');
-	var NODE = new RegExp('^(' + characterEncoding + ')|(' + token + ')');
+	var NODE = new RegExp('^' + whitespace + '*(' + characterEncoding + ')|(' + token + ')' + whitespace + '*');
 
 	//Siblings Analysis
 	var analysis = function(str){
@@ -70,7 +71,9 @@
 			}else{
 				str = '';
 			}
-			if(clsArr.length) tag.className = clsArr.join(' ');
+		}
+		if(clsArr.length){
+			tag.className = clsArr.join(' ');
 		}
 		return tag;		
 	}
@@ -78,7 +81,7 @@
 	var template = function(selector,data,fn,isDesc){
 		var template_arr,frags = document.createDocumentFragment();
 		if(!isDesc && data && fn) fn(data);
-		if(varReg.test(selector) && !/\*/.test(selector) && data) selector = dataFormat(selector,data);
+		if(varRegTest.test(selector) && !/\*/.test(selector) && data) selector = dataFormat(selector,data);
 
 		template_arr = analysis(selector);
 		for(var i = 0; i < template_arr.length;i++){
@@ -117,7 +120,7 @@
 							if(attrStr) setAttribute(attrStr,ancestor);
 						}else{
 							var txt = tNode[2];
-							if(!varReg.test(txt)) txt = tNode[3];
+							if(!varRegTest.test(txt)) txt = tNode[3];
 							ancestor = document.createTextNode(txt);
 						}
 					}
@@ -125,20 +128,22 @@
 					if(times == 1){
 						frg.appendChild(ancestor);
 					}else{
-						var tag = ancestor.nodeName,html = ancestor.innerHTML,hasAttrVar = varReg.test(attrStr),hasConVar = varReg.test(html),clone = null;
+						var tag = ancestor.nodeName,html = ancestor.innerHTML,hasAttrVar = varRegTest.test(attrStr),hasConVar = varRegTest.test(html),clone = null;
 						while(index != times){
 							if(data && (hasAttrVar || hasConVar)){
 								var results;
-								clone = document.createElement(tag);
 								if(hasAttrVar){
 									var fnode = attrStr.replace(/\*/g,index);
+									clone = document.createElement(tag);
 									results = dataFormat(fnode,data,true);
 									setAttribute(results,clone);
+								}else{
+									clone = ancestor.cloneNode(true);
 								}
 								if(hasConVar){
 									var fhtml = html.replace(/(\.|\[)\*(\.|\]|\})/g,'$1' + index + '$2');
 									results = dataFormat(fhtml,data,true);
-									if(window.ActiveXObject && tag.toLowerCase() == 'tr'){//Table Elements Are ReadOnly In IE Except TD
+									if(window.ActiveXObject && tag.toLowerCase() == 'tr'){
 										var div = document.createElement('div');
 										div.innerHTML = '<table><tr>' + results + '</tr></table>';
 										var tds = div.getElementsByTagName('td');
