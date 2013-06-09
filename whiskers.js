@@ -15,14 +15,14 @@
 	// http://www.w3.org/TR/css3-syntax/#characters
 	var characterEncoding = '(?:\\\\.|[\\w-]|[^\\x00-\\xa0])+';
 
-	var token = '\\{\\{=(\\$?' + characterEncoding.replace('w','w\\[\\]\\.\\*\'"') + ')\\}\\}';
+	var token = '\\{\\{=(\\$?' + characterEncoding.replace('w','w\\[\\]\\.\\*\'" ') + ')\\}\\}';
 	var varRegTest = new RegExp(token.replace('?',''));
 	var varReg = new RegExp(token.replace('?',''),'g');
 	var varCon = new RegExp('(\\$' + characterEncoding.replace('w','w\\[\\]\\.\\*\'"') + ')','g');
 
 	var ID = new RegExp('#(' + characterEncoding + ')');
 	var CLASS = new RegExp('\\.(' + characterEncoding + '|' + token  + ')');
-	var ATTR = new RegExp('\\[' + whitespace + '*(' + characterEncoding + ')' + whitespace + '*=' + whitespace + '*((?:' + token.replace('?','') + '|' + characterEncoding.replace('w','w\\."\'') +'))' + whitespace + '*\\]');
+	var ATTR = new RegExp('\\[' + whitespace + '*(' + characterEncoding + ')' + whitespace + '*=' + whitespace + '*((?:' + token.replace('?','') + '|' + characterEncoding.replace('w','w\\."\':;') +'))' + whitespace + '*\\]');// ':;' is for style attributes [style=color:red;font-size:12px;]
 	var rBracket = new RegExp('^' + whitespace + '*\\(((?:\\\\.|[^\\\\])*)\\)' + whitespace + '*');
 
 	var TEMPLATE = new RegExp('^' + whitespace + '*' + '(' + '(?:\\\\.|[^\\\\()])+' + ')' + whitespace + '*>' + whitespace + '*(' + '(?:\\\\.|[^\\\\()>])+|\\((?:\\\\.|[^\\\\])+\\)' + ')' + whitespace + '*$');
@@ -45,7 +45,7 @@
 				temp = [];
 			}
 		}
-		return results;
+		return results.length ? results : [str];
 	}
 	//Fill Datas
 	var dataFormat = function(html,data,isFull){
@@ -62,8 +62,14 @@
 		if(ids) tag.id = ids[1];
 		while(str != ''){
 			if(attrs = ATTR.exec(str)){
-				var name = attrs[1],value = attrs[2];
-				tag.setAttribute(name,value);
+				var name = attrs[1].toLowerCase(),value = attrs[2];
+				if(name == 'class'){
+					tag.className += value;
+				}else if(name == 'style'){
+					tag.style.cssText = value;
+				}else{
+					tag.setAttribute(name,value);
+				}
 				str = str.replace(ATTR,'');
 			}else if(classes = CLASS.exec(str)){
 				clsArr.push(classes[1]);
