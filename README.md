@@ -52,10 +52,11 @@ More information about [**CSS SLECTOR**](http://www.w3.org/TR/2011/REC-css3-sele
 It is the same as :
 
 	var template = Whiskers.create('div#wrapper'),
-	    ul = Whikers.create('ul.lists[data-type=news]'),
+	    ul = Whiskers.create('ul.lists[data-type=news]'),
 	    lis = Whiskers.create('li*2');
 	lis.append('span>{{=Hello World}}');
-	ul.append('lis');
+	ul.append(lis);
+	template.append(ul);
 
 **Notice**: The methods of `template` created by `Whiskers.create()` are :
 - `template.append(tmpl)` -- Add `tmpl` as the last child of `template`.
