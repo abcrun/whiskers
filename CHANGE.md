@@ -1,23 +1,16 @@
 ### HEAD (0.1.0)
-
 	* The original production.
-
 ### Version (0.2.0)
-
 	* Add supports to templates groups.
 	* Add supports to AMD and CommonJS.
 	* optimize some RegExp.
-
 ### Version (0.2.1)
-
 	* Optimize variable and datas.
-
 ### Version (0.2.2)
-
 	* Merge the function `whiskers` and `template`.
 	* Fix the bug of setting attributes.
-
 ### Version (0.3.0)
-
 	* Optimize the RegExp.
 	* Optimize attributes setting.
+### Version (0.3.1)
+	* Add methods to create and control `template`.

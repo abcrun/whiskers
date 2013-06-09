@@ -2,7 +2,7 @@
 * Javascript Templating Engine (Selector Styles) - A New Way To Deal With Templates 
 * The MIT License - Copyright (c) 2013 Hongbo Yang <abcrun@gmail.com>
 * Repository - https://github.com/abcrun/whiskers.git
-* Version - 0.3.0
+* Version - 0.3.1
 */
 
 (function(name,factory){
@@ -78,7 +78,7 @@
 		return tag;		
 	}
 	
-	var template = function(selector,data,fn,isDesc){
+	var render = function(selector,data,fn,isDesc){
 		var template_arr,frags = document.createDocumentFragment();
 		if(!isDesc && data && fn) fn(data);
 		if(varRegTest.test(selector) && !/\*/.test(selector) && data) selector = dataFormat(selector,data);
@@ -87,7 +87,7 @@
 		for(var i = 0; i < template_arr.length;i++){
 			var template_str = template_arr[i];
 			if(rBracket.test(template_str)){
-				frags.appendChild(template(template_str.replace(rBracket,'$1'),data,fn,true));
+				frags.appendChild(render(template_str.replace(rBracket,'$1'),data,fn,true));
 				continue;
 			}
 			var matches = TEMPLATE.exec(template_str),
@@ -99,7 +99,7 @@
 				descendant = matches[2];
 			}
 
-			if(descendant) descendant = template(descendant.replace(rBracket,'$1'),data,fn,true);
+			if(descendant) descendant = render(descendant.replace(rBracket,'$1'),data,fn,true);
 
 			if(ancestor){
 				var ancestor_arr = ancestor.split('>'),frg = descendant || document.createDocumentFragment();
@@ -170,9 +170,49 @@
 		return frags;
 	}
 
-	//Basic Information
-	var Whiskers = {};
-	Whiskers.render = template;
+	var template = function(tmpl){
+		this.template = tmpl || '';
+		this.childNodes = [];
+		this.results = [];
+	}
+	template.prototype = {
+		append:function(tmpl){
+			this.childNodes.push(tmpl);
+		},
+		prepend:function(tmpl){
+			this.childNodes.unshift(tmpl);
+		},
+		toString:function(){
+			var tmpl = this.template,childNodes = this.childNodes,length = childNodes.length;
+			this.results = [];
+			if(tmpl) this.results.push(tmpl);
+
+			if(childNodes.length){
+				var results = [],rlength;
+				for(var i = 0; i < length; i++){
+					var node = childNodes[i];
+					if(node.childNodes && node.childNodes.length) results.push(node.toString());
+					else results.push(node['template'] || node);
+				}
+				if(rlength = results.length){
+					results = rlength > 1 ? '(' + results.join('+') + ')' : results[0];
+					this.results.push(results);
+				}
+			}
+			return this.results.join('>');
+		}
+	}
+
+	var Whiskers = {
+		render:function(){
+			var arg = arguments;
+			if(typeof arg[0] != 'string') arg[0] = arg[0].toString();
+			return render.apply(this,arg);
+		},
+		create:function(tmpl){
+			return new template(tmpl);
+		}
+	}
 
 	return Whiskers;
 })
