@@ -62,7 +62,7 @@
 		if(ids) tag.id = ids[1];
 		while(str != ''){
 			if(attrs = ATTR.exec(str)){
-				var name = attrs[1].toLowerCase(),value = attrs[2];
+				var name = attrs[1].toLowerCase(),value = attrs[2].replace(/'|"/g,'');
 				if(name == 'class'){
 					tag.className += value;
 				}else if(name == 'style'){
