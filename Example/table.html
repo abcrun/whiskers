@@ -5,6 +5,7 @@
 	<title></title>
 </head>
 <body>
+<div id="test"></div>
 </body>
 <script type="text/javascript" src="../whiskers-min.js"></script>
 <script type="text/javascript">
@@ -21,8 +22,7 @@ var data = Whiskers.render('table>(thead>tr>(td.td1>{{=时间}}+td.td2>{{=成交
 		data[i]['color'] = (p<0?'green':(p>0?'red':''));
 	}
 });
-document.body.appendChild(data);
-
+document.getElementById('test').innerHTML = data;
 console.log('耗时:' + (new Date().getTime() - d) + 'ms')
 </script>
 </html>

@@ -2,7 +2,7 @@
 * Javascript Templating Engine (Selector Styles) - A New Way To Deal With Templates 
 * The MIT License - Copyright (c) 2013 Hongbo Yang <abcrun@gmail.com>
 * Repository - https://github.com/abcrun/whiskers.git
-* Version - 0.3.1
+* Version - 0.4.0
 */
 
 (function(name,factory){
@@ -16,164 +16,115 @@
 	var characterEncoding = '(?:\\\\.|[\\w-]|[^\\x00-\\xa0])+';
 
 	var token = '\\{\\{=(\\$?' + characterEncoding.replace('w','w\\[\\]\\.\\*\'" ') + ')\\}\\}';
-	var varRegTest = new RegExp(token.replace('?',''));
 	var varReg = new RegExp(token.replace('?',''),'g');
-	var varCon = new RegExp('(\\$' + characterEncoding.replace('w','w\\[\\]\\.\\*\'"') + ')','g');
+	var conReg = new RegExp(token.replace('\\$?',''),'g');
 
 	var ID = new RegExp('#(' + characterEncoding + ')');
 	var CLASS = new RegExp('\\.(' + characterEncoding + '|' + token  + ')');
 	var ATTR = new RegExp('\\[' + whitespace + '*(' + characterEncoding + ')' + whitespace + '*=' + whitespace + '*((?:' + token.replace('?','') + '|' + characterEncoding.replace('w','w\\."\':;') +'))' + whitespace + '*\\]');// ':;' is for style attributes [style=color:red;font-size:12px;]
-	var rBracket = new RegExp('^' + whitespace + '*\\(((?:\\\\.|[^\\\\])*)\\)' + whitespace + '*');
 
-	var TEMPLATE = new RegExp('^' + whitespace + '*' + '(' + '(?:\\\\.|[^\\\\()])+' + ')' + whitespace + '*>' + whitespace + '*(' + '(?:\\\\.|[^\\\\()>])+|\\((?:\\\\.|[^\\\\])+\\)' + ')' + whitespace + '*$');
 	var NODE = new RegExp('^' + whitespace + '*(' + characterEncoding + ')|(' + token + ')' + whitespace + '*');
 
-	//Siblings Analysis
+	//Characters Analysis
 	var analysis = function(str){
 		var length = str.length,
 			brackets = 0,
-			temp = [],results = [];
+			temp = [],starts = [],ends = [],
+			result,results = [];
 		for(var i = 0;i < length;i++){
 			var char = str.charAt(i);
 			if(char == '(') brackets++;
 			if(char == ')') brackets--;
-			if((char == '+' && brackets) || char != '+') temp.push(char);
 
-			if(!brackets && (char == '+' || i == (length - 1))){
-				results.push(temp.join('').replace(/(?:^\s+|\s+$)/,''));
-				brackets = 0;
-				temp = [];
-			}
-		}
-		return results.length ? results : [str];
-	}
-	//Fill Datas
-	var dataFormat = function(html,data,isFull){
-		var varConReg = isFull ? varReg : varCon;
-		return (html.replace(varConReg,function($0,$1){
-			var keys = $1.match(/[^\[\]\.]+/g),results;
-			if(keys) while(keys.length) results = (results || data)[keys.shift()];
-			return (!/(?:undefined|null)/.test(results) ? results : $0);
-		}))
-	}
-	//Set Node Attributes
-	var setAttribute = function(str,tag){
-		var ids = ID.exec(str),attrs,classes,clsArr = [];
-		if(ids) tag.id = ids[1];
-		while(str != ''){
-			if(attrs = ATTR.exec(str)){
-				var name = attrs[1].toLowerCase(),value = attrs[2].replace(/'|"/g,'');
-				if(name == 'class'){
-					tag.className += value;
-				}else if(name == 'style'){
-					tag.style.cssText = value;
-				}else{
-					tag.setAttribute(name,value);
-				}
-				str = str.replace(ATTR,'');
-			}else if(classes = CLASS.exec(str)){
-				clsArr.push(classes[1]);
-				str = str.replace(CLASS,'');
+			if(brackets){
+				if((brackets == 1 && char != '(') || brackets != 1) temp.push(char);
 			}else{
-				str = '';
+				if(char != ')' && char != '+' && char != '>') temp.push(char);
+				if(char == ')'){
+					starts.push(analysis(temp.join('')));
+				}else if(char == '>' || char == '+' || i == length - 1){
+					result = format(temp.join(''));
+					starts.push(result[0]);
+					ends.unshift(result[1]);
+					temp = [];
+					if(char == '+'){
+						results.push(starts.join('') + ends.join(''));
+						starts = [];
+						ends = [];
+					}
+				}
 			}
 		}
-		if(clsArr.length){
-			tag.className = clsArr.join(' ');
-		}
-		return tag;		
+		
+		results.push(starts.join('') + ends.join(''));
+		return results.join('');
 	}
 	
-	var render = function(selector,data,fn,isDesc){
-		var template_arr,frags = document.createDocumentFragment();
-		if(!isDesc && data && fn) fn(data);
-		if(varRegTest.test(selector) && !/\*/.test(selector) && data) selector = dataFormat(selector,data);
+	//Generate HTML Strings
+	var format = function(str){
+		var nodes = NODE.exec(str),starts = [],ends = [];
+		if(!nodes) return ['',''];
 
-		template_arr = analysis(selector);
-		for(var i = 0; i < template_arr.length;i++){
-			var template_str = template_arr[i];
-			if(rBracket.test(template_str)){
-				frags.appendChild(render(template_str.replace(rBracket,'$1'),data,fn,true));
-				continue;
-			}
-			var matches = TEMPLATE.exec(template_str),
-				ancestor = descendant = null;
-
-			if(!matches) ancestor = template_str;
-			else{
-				ancestor = matches[1];
-				descendant = matches[2];
-			}
-
-			if(descendant) descendant = render(descendant.replace(rBracket,'$1'),data,fn,true);
-
-			if(ancestor){
-				var ancestor_arr = ancestor.split('>'),frg = descendant || document.createDocumentFragment();
-				while(ancestor_arr.length){
-					var ancestor_cur = ancestor_arr.pop(),
-						node,tNode,attrStr = '',times = 1,index = 0;
-
-					node = ancestor_cur.replace(/\*(\d+)/,function($0,$1){
-						if($1) times = parseInt($1);
-						return '';
-					})
-					if(tNode = NODE.exec(node)){
-						if(tNode[1]){
-							ancestor = document.createElement(tNode[1]);
-							ancestor.appendChild(frg);
-
-							attrStr = node.replace(new RegExp('^' + whitespace + '*' + tNode[1]),'');
-							if(attrStr) setAttribute(attrStr,ancestor);
-						}else{
-							var txt = tNode[2];
-							if(!varRegTest.test(txt)) txt = tNode[3];
-							ancestor = document.createTextNode(txt);
-						}
-					}
-
-					if(times == 1){
-						frg.appendChild(ancestor);
-					}else{
-						var tag = ancestor.nodeName,html = ancestor.innerHTML,hasAttrVar = varRegTest.test(attrStr),hasConVar = varRegTest.test(html),clone = null;
-						while(index != times){
-							if(data && (hasAttrVar || hasConVar)){
-								var results;
-								if(hasAttrVar){
-									var fnode = attrStr.replace(/\*/g,index);
-									clone = document.createElement(tag);
-									results = dataFormat(fnode,data,true);
-									setAttribute(results,clone);
-								}else{
-									clone = ancestor.cloneNode(true);
-								}
-								if(hasConVar){
-									var fhtml = html.replace(/(\.|\[)\*(\.|\]|\})/g,'$1' + index + '$2');
-									results = dataFormat(fhtml,data,true);
-									if(window.ActiveXObject && tag.toLowerCase() == 'tr'){
-										var div = document.createElement('div');
-										div.innerHTML = '<table><tr>' + results + '</tr></table>';
-										var tds = div.getElementsByTagName('td');
-										while(tds.length){
-											clone.appendChild(tds[0])
-										}
-										div = null;
-									}else{
-										clone.innerHTML = results;
-									}
-								}
-							}else{
-								clone = ancestor.cloneNode(true);
-							}
-							frg.appendChild(clone);
-							index++;
-						}
-						ancestor = clone = null;
-					}
+		var tag = nodes[1],txt = nodes[2];
+		if(tag){
+			var time = 1,ids = ID.exec(str),attrs,classes,clsArr = [];
+			str.replace(/\*(\d+)/,function($0,$1){
+				if($1) time = $1;
+				return '';
+			})
+			if(time != 1) starts.push(time + '*(')
+			starts.push('<' + tag);
+			if(ids) starts.push(ids[1]);
+			while(str != ''){
+				if(attrs = ATTR.exec(str)){
+					var name = attrs[1].toLowerCase(),value = attrs[2];
+					if(name == 'class') clsArr.push(value);
+					else starts.push(name + '=' + value);
+					str = str.replace(ATTR,'');
+				}else if(classes = CLASS.exec(str)){
+					clsArr.push(classes[1]);
+					str = str.replace(CLASS,'');
+				}else{
+					str = '';
 				}
 			}
-			frags.appendChild(frg);
+			if(clsArr.length) starts.push('class="' + clsArr.join(' ') + '"');
+			starts.push('>');
+			ends.unshift('</' + tag + '>');
+			if(time != 1) ends.push(')*' + time)
+		}else if(txt){
+			starts.push(txt);
+			ends.unshift('');
 		}
-		return frags;
+		return [starts.join(' '),ends.join('')];	
+	}
+	
+	var render = function(selector,data,fn){
+		var html,repeat = /(\d+)\*\(((?:\\\\.|[^\\\\])+)\)\*\1/g;
+		if(data && fn) fn(data);
+		html = analysis(selector);
+		//Generate Repeat String -> 2*(<li></li>)*2(<li></li><li></li>)
+		html = html.replace(repeat,function($0,$1,$2){
+			var times = $1,base = $2,temp = [];
+			for(var i = 0; i < times; i++){
+				temp.push(base.replace(/\*/g,i));	
+			}
+			return temp.join('')
+		})
+		//Fill Data for variable -> {{=$[*][0]}}
+		if(data){
+			html = html.replace(varReg,function($0,$1){
+				var keys = $1.match(/[^\[\]\.]+/g),results;
+				if(keys) while(keys.length) results = (results || data)[keys.shift()];
+				return (!/(?:undefined|null)/.test(results) ? results : $0);
+			})
+		}
+		//Format Text Node -> {{=test}}
+		html = html.replace(conReg,function($0,$1){
+			return $1;
+		})
+
+		return html;
 	}
 
 	var template = function(tmpl){
