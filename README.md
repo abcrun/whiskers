@@ -2,13 +2,12 @@
 
 ---
 
-A New Way To Deal With Template - selector styles template with javascript
+The *whiskers* takes a new way(CSS Selector API) to deal with template.
 
 基于CSS Selector API的Javascript模板视图模块，可以快速生成HTML代码碎片
 
 ---
 
-The *whiskers* takes a new way(CSS Selector API) to deal with template.
 
 More information about [**CSS SLECTOR**](http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#selectors).
 
@@ -19,8 +18,8 @@ More information about [**CSS SLECTOR**](http://www.w3.org/TR/2011/REC-css3-sele
 	Whiskers.create(template) //create template
 ### Parameters (参数)
 ###### .render(template,data,fn)
-- `template:Required` -- A string stands for template or template created by `Whiskers.create(template)`.
-- `data:Optional` -- The Data To be Filled.
+- `template:Required` -- A string stands for the template or an template object created by `Whiskers.create(template)`.
+- `data:Optional` -- The data for the template.
 - `fn:Optional` -- A function excutes when rendering.
 
 ###### template (模板)
@@ -31,7 +30,7 @@ More information about [**CSS SLECTOR**](http://www.w3.org/TR/2011/REC-css3-sele
 - `+` -- siblings : `div + p` stands for `<div></div><p></p>`
 - `*` -- node repeat times : `li*3` stands for `<li></li><li></li><li></li>`
 - `{{=Hello World}}` -- text node : `span>{{=Hello World}}` stands for `<span>Hello World</span>`
-- `{{=$.abc}}` -- $abc is the variable
+- `{{=$.abc}}` -- $.abc is the variable
 
 ###### variable (变量)
 `$.name` and `$[name]` are standing for the same variable.
