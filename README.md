@@ -19,8 +19,8 @@ More information about [**CSS SLECTOR**](http://www.w3.org/TR/2011/REC-css3-sele
 ### Parameters (参数)
 ###### .render(template,data,fn)
 - `template:Required` -- A string stands for the template or an template object created by `Whiskers.create(template)`.
-- `data:Optional` -- The data for the template.
-- `fn:Optional` -- A function excutes when rendering.
+- `data:Optional` -- The data of the template.
+- `fn:Optional` -- A function excutes before rendering which can be used to format data.
 
 ###### template (模板)
 - `#` -- id : `div#test` stands for `<div id="test"></div>`
@@ -35,7 +35,7 @@ More information about [**CSS SLECTOR**](http://www.w3.org/TR/2011/REC-css3-sele
 ###### variable (变量)
 `$.name` and `$[name]` are standing for the same variable.
 
-**name** is the *index* of an array or the *key* in an object. 
+**name** stands for the *index* of an array or the *key* in an object. 
 
 	{
 		title:'whiskers',
