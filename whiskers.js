@@ -21,7 +21,7 @@
 
 	var ID = new RegExp('#(' + characterEncoding + ')');
 	var CLASS = new RegExp('\\.(' + characterEncoding + '|' + token  + ')');
-	var ATTR = new RegExp('\\[' + whitespace + '*(' + characterEncoding + ')' + whitespace + '*=' + whitespace + '*((?:' + token.replace('?','') + '|' + characterEncoding.replace('w','w\\."\':;') +'))' + whitespace + '*\\]');// ':;' is for style attributes [style=color:red;font-size:12px;]
+	var ATTR = new RegExp('\\[' + whitespace + '*(' + characterEncoding + ')' + whitespace + '*=' + whitespace + '*([\'"]?)((?:' + token.replace('?','') + '|' + characterEncoding.replace('w','w\\."\':;') +'))\\2' + whitespace + '*\\]');// ':;' is for style attributes [style=color:red;font-size:12px;]
 
 	var NODE = new RegExp('^' + whitespace + '*(' + characterEncoding + ')|(' + token + ')' + whitespace + '*');
 
@@ -77,7 +77,7 @@
 			if(ids) starts.push(ids[1]);
 			while(str != ''){
 				if(attrs = ATTR.exec(str)){
-					var name = attrs[1].toLowerCase(),value = attrs[2];
+					var name = attrs[1].toLowerCase(),value = attrs[3];
 					if(name == 'class') clsArr.push(value);
 					else starts.push(name + '=' + value);
 					str = str.replace(ATTR,'');
