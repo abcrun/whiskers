@@ -48,22 +48,10 @@ More information about [**CSS SLECTOR**](http://www.w3.org/TR/2011/REC-css3-sele
 ###### template: string
 `var template = 'div#wrapper>ul.lists[data-type=news]>li*2>span>{{=Hello World}}'`
 
-It is the same as :
-
-	var template = Whiskers.create('div#wrapper'),
-	    ul = Whiskers.create('ul.lists[data-type=news]'),
-	    lis = Whiskers.create('li*2');
-	lis.append('span>{{=Hello World}}');
-	ul.append(lis);
-	template.append(ul);
-
-**Notice**: The methods of `template` created by `Whiskers.create()` are :
-- `template.append(tmpl)` -- Add `tmpl` as the last child of `template`.
-- `template.prepend(tmpl)` -- Add `tmpl` as the first child of `template`.
-- `template.toString()` -- Change the `template` to string.
-
 ###### Whiskers.render(template,data,fn)
 `Whiskers.render(template)`
+
+Output:
 
 	<div id="wrapper">
 		<ul class="lists" data-type="news">
@@ -107,14 +95,21 @@ Output:
 		<li class="index1"><span name="attributes">4</span><span>5</span><span>6</span></li>
 	</ul>
 	
-**Notice**:
-- `template` -- Strongly recommended to split a complex template into small units. For examples:
+###### More imformation about `template`
 
-> `var template = 'ul>li*2>(span>{{=$.*.1}}+span>{{=$.*.0}}+span>{{=$.*.2}}) + ul>li*2>(span>{{=$.*.1}}+span>{{=$.*.0}}+span>{{=$.*.2}})';`
+`var template = 'div#wrapper>ul.lists[data-type=news]>li*2>span>{{=Hello World}}'` It is the same as :
 
-> It is better to split like this:
+	var template = Whiskers.create('div#wrapper'),
+	    ul = Whiskers.create('ul.lists[data-type=news]'),
+	    lis = Whiskers.create('li*2');
+	lis.append('span>{{=Hello World}}');
+	ul.append(lis);
+	template.append(ul);
 
-> `li*2>(span>{{=$.*.1}}+span>{{=$.*.0}}+span>{{=$.*.2}})` and `li*2>(span>{{=$.*.1}}+span>{{=$.*.0}}+span>{{=$.*.2}})`
+The methods about `template` created by `Whiskers.create()`:
+- `template.append(tmpl)` -- Add `tmpl` as the last child of `template`.
+- `template.prepend(tmpl)` -- Add `tmpl` as the first child of `template`.
+- `template.toString()` -- Change the `template` to string.
 
 
 **Notice**:Compatible with AMD and CommonJS
