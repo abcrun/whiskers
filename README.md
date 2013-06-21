@@ -5,7 +5,7 @@ whiskers.js是一个Javascript模板组件，它可以将一段 **特殊标记�
 
 ###### 快速预览
 
-	var template = 'div#wrapper>ul.lists[data-type=news]>li*2>span>{{=Hello World}};
+	var template = 'div#wrapper>ul.lists[data-type=news]>li*2>span>{{=Hello World}}';
 	Whiskers.render(template);
 
 将会生成如下字符串：
@@ -58,6 +58,8 @@ whiskers.js是一个Javascript模板组件，它可以将一段 **特殊标记�
 
 通过这些方法，我们可以重新定义whiskers模板：
 
+	var template = 'div#wrapper>ul.lists[data-type=news]>li*2>span>{{=Hello World}}'
+	//相当于
 	var template = Whiskers.create('div#wrapper'),
 	    ul = Whiskers.create('ul.lists[data-type=news]'),
 	    lis = Whiskers.create('li*2');
