@@ -1,5 +1,7 @@
 #whiskers.js
-whiskers.js是一个Javascript模板组件，可以将一段 **特殊标记的字符串(whiskers模板)** 快速转换成HTML代码。
+whiskers.js是一个Javascript模板组件，它可以将一段 **特殊标记的字符串(whiskers模板)** 转换成HTML代码。
+
+作为一名Javascript开发人员，我们有时需要同后端交互（如异步请求等）获取所需要的 **数据** ，根据 **whisker模板** 标识，进行渲染回填到Web页面中。
 
 ###### 快速预览
 
