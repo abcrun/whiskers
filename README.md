@@ -1,14 +1,15 @@
 #whiskers.js
-whiskers.js是一个Javascript模板组件，它可以将一段 **特殊标记的字符串(whiskers模板)** 转换成HTML代码。
 
-作为一名Javascript开发人员，我们有时需要同后端交互（如异步请求等）获取所需要的 **数据** ，将数据组装成HTML代码，回填到页面中。这个时候我们就可以使用whiskers.js,通过创建 **whisker模板** 作为HTML标识，并将后台获取到的数据作为参数传递给 **渲染** 函数进行处理，最终回填到Web页面中。
+whiskers.js是一个Javascript模板组件，它可以用来将一段 **特殊标记的字符串(whiskers模板<sup>见下文</sup>)** 转换为相应的HTML代码。
+
+随着AJAX的兴起，一些服务器端的工作转移到了客户端上。以微博为例，客户端向服务器发送请求来获取最新消息，当客户端收到最新的消息后，会将这些数据按照一定的结构组装成HTML代码，然后回填到页面中。whiskers.js可以用来将从后台获取到数据按照设定好的HTML结构( **whiskers模板<sup>见下文</sup>** )转换成HTML代码。
 
 ###### 快速预览
 
-	var template = 'div#wrapper>ul.lists[data-type=news]>li*2>span>{{=Hello World}}';
+	var template = 'div#wrapper>ul.lists[data-type=news]>li*2>span>{{=Hello World}}'; //whiskers模板
 	Whiskers.render(template);
 
-将会生成如下字符串：
+将会生成如下HTML代码：
 
 	<div id="wrapper">
 		<ul class="lists" data-type="news">
@@ -23,9 +24,9 @@ whiskers.js是一个Javascript模板组件，它可以将一段 **特殊标记�
 
 ### 什么是whiskers模板
 
-**whiskers模板** 其实就是一段带有 **特殊标记的字符串** ，它遵循[**CSS SLECTOR**](http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#selectors)规范，并在此基础上添加了变量和文本标记的特殊字符。
+**whiskers模板** 其实就是一段带有 **特殊标记的字符串** ，它是将HTML代码按照一定的规则简化成一段特殊的字符串。 它遵循[**CSS SLECTOR**](http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#selectors)规范，并在此基础上添加了变量和文本标记的特殊字符。
 
-###### 模板规范
+###### whiskers模板规范
 
 - `#` -- id : `div#test` 相当于 `<div id="test"></div>`
 - `.` -- className : `div.test` 相当于 `<div class="test"></div>`
@@ -35,21 +36,21 @@ whiskers.js是一个Javascript模板组件，它可以将一段 **特殊标记�
 - `*` -- 节点重复次数 : `li*3` 相当于 `<li></li><li></li><li></li>`
 - `()` -- 包含标识符,用于包含多个子元素 : div>(h2 + p) 相当于 `<div><h2></h2><p></p></div>`
 - `{{=Hello World}}` -- 文本节点 : `span>{{=Hello World}}` 相当于 `<span>Hello World</span>`
-- `{{=$.abc}}` -- $.abc表示变量 
+- `{{=$.abc}}` -- $.abc表示 **变量** <sup>见下文</sup> 
 
 ###### 创建模板
 
-由于whiskers模板是一段带有 **特殊标记的字符串** ，所以我们可以在Javascript中按照以上 **规范** 直接定义：
+由于whiskers模板是一段带有 **特殊标记的字符串** ，所以我们可以在Javascript中直接定义：
 
 	var template = "div#wrapper>ul.lists[data-type=news]>li*2>span>{{=Hello World}}";
 
-也可以写在html页面 **自定义** 的script标签中，通过获取这个节点innerHTML来得到模板字符串:
+也可以写在html页面 **自定义的script标签** 中，通过获取这个节点innerHTML来得到模板字符串:
 
 	<script type="javascript/template">
 		div#wrapper>ul.lists[data-type=news]>li*2>span>{{=Hello World}}	
 	</script>
 
-然而我们会发现对于那些比较复杂的HTML结构，通过直接编写字符串容易产生混淆，而且也不易阅读，因此我们定义了一系列的函数，用于创建模板：
+然而对于那些很长且比较复杂的HTML结构，按照以上方法直接转换时，我们会发现容易让人混淆，而且也不易阅读，因此whiskers.js为之定义了一系列的函数，用于创建模板：
 
 	var template = Whiskers.create(template);//创建模板
 	template.append(tmpl);//将tmpl添加为template的最后一个子元素
@@ -69,7 +70,7 @@ whiskers.js是一个Javascript模板组件，它可以将一段 **特殊标记�
 
 ###### 关于变量
 
-拿服务器端来说，程序可以从数据库获取数据，处理后输出到WEB页面。同理Javascript可以通过与后台交互（如异步请求等）获取数据，通过 **whikers渲染** 回填到WEB页面中。而这里说的 **变量** 就是用来表示将要回填的数据。
+拿后端来说，程序可以从数据库获取数据，并将其输出到WEB页面。同理Javascript可以通过与后台交互（如异步请求等）获取数据，将这些数据按照 **whikers模板** 规则组合成HTML字符串，回填到页面中。而这里说的 **变量** 就是用来表示获取到的数据。
 
 示例：
 
@@ -84,12 +85,14 @@ whiskers.js是一个Javascript模板组件，它可以将一段 **特殊标记�
 ### 渲染模板
 	
 	Whiskers.render(template,data,fn);
+	
+就是将 **whiskers模板** 转换成HTML代码的函数。
 
 ###### 参数说明
 
-- `template:必选` -- 特殊标记的字符串，或通过`whiskers.create(tmpl)`创建的模板对象。
-- `data:可选` -- 用于回填的数据。
-- `fn:可选` -- 在回填数据之前，用来处理这些数据。
+- `template:必选` -- whiskers模板 - 特殊标记的字符串，或通过`whiskers.create(tmpl)`创建的模板对象。
+- `data:可选` -- 用于回填到变量中的数据。
+- `fn:可选` -- 在回填数据之前，可以用来处理这些数据。
 
 ### 一些示例
 
