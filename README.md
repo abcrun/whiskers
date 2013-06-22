@@ -2,7 +2,9 @@
 
 whiskers.js是一个Javascript模板组件，它可以用来将一段 **特殊标记的字符串(whiskers模板<sup>见下文</sup>)** 转换为相应的HTML代码。
 
-随着AJAX的兴起，一些服务器端的工作转移到了客户端上。以微博为例，客户端向服务器发送请求来获取最新消息，当客户端收到最新的消息后，会将这些数据按照一定的结构组装成HTML代码，然后回填到页面中。whiskers.js可以用来将从后台获取到数据按照设定好的HTML结构( **whiskers模板<sup>见下文</sup>** )转换成HTML代码。
+随着AJAX的兴起，一些服务器端的工作转移到了客户端上。以微博为例，客户端向服务器发送请求来获取最新消息，当客户端收到最新的消息后，会将这些数据按照一定的结构组装成HTML代码，然后回填到页面中。而whiskers.js就是可以用来将从后台获取到数据按照设定好的HTML结构( **whiskers模板<sup>见下文</sup>** )转换成HTML代码的模板组件。
+
+下面是一个简单的示例：
 
 ###### 快速预览
 
@@ -50,7 +52,7 @@ whiskers.js是一个Javascript模板组件，它可以用来将一段 **特殊�
 		div#wrapper>ul.lists[data-type=news]>li*2>span>{{=Hello World}}	
 	</script>
 
-然而对于那些很长且比较复杂的HTML结构，按照以上方法直接转换时，我们会发现容易让人混淆，而且也不易阅读，因此whiskers.js为之定义了一系列的函数，用于创建模板：
+然而对于那些很长且NODE之间关系复杂的HTML结构，按照以上方法直接定义时，我们会发现容易让人混淆，而且也不易阅读，因此whiskers.js为之定义了一系列的函数，用于创建模板（方法类似于创建DOM元素）：
 
 	var template = Whiskers.create(template);//创建模板
 	template.append(tmpl);//将tmpl添加为template的最后一个子元素
