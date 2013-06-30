@@ -19,7 +19,7 @@
 	var varReg = new RegExp(token.replace('?',''),'g');
 	var conReg = new RegExp(token.replace('\\$?',''),'g');
 
-	var ID = new RegExp('#(' + characterEncoding + ')');
+	var ID = new RegExp('#(' + characterEncoding + '|' + token + ')');
 	var CLASS = new RegExp('\\.(' + characterEncoding + '|' + token  + ')');
 	var ATTR = new RegExp('\\[' + whitespace + '*(' + characterEncoding + ')' + whitespace + '*=' + whitespace + '*([\'"]?)((?:' + token.replace('?','') + '|' + characterEncoding.replace('w','w\\."\':;') +'))\\2' + whitespace + '*\\]');// ':;' is for style attributes [style=color:red;font-size:12px;]
 
@@ -74,7 +74,7 @@
 			})
 			if(time != 1) starts.push(time + '*(')
 			starts.push('<' + tag);
-			if(ids) starts.push(ids[1]);
+			if(ids) starts.push('id=' + ids[1]);
 			while(str != ''){
 				if(attrs = ATTR.exec(str)){
 					var name = attrs[1].toLowerCase(),value = attrs[3];
