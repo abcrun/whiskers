@@ -67,12 +67,12 @@
 
 		var tag = nodes[1],txt = nodes[2];
 		if(tag){
-			var time = 1,ids = ID.exec(str),attrs,classes,clsArr = [];
+			var time,ids = ID.exec(str),attrs,classes,clsArr = [];
 			str.replace(/\*(\d+)/,function($0,$1){
 				if($1) time = $1;
 				return '';
 			})
-			if(time != 1) starts.push(time + '*(')
+			if(time) starts.push(time + '*(')
 			starts.push('<' + tag);
 			if(ids) starts.push('id=' + ids[1]);
 			while(str != ''){
@@ -91,7 +91,7 @@
 			if(clsArr.length) starts.push('class="' + clsArr.join(' ') + '"');
 			starts.push('>');
 			ends.unshift('</' + tag + '>');
-			if(time != 1) ends.push(')*' + time)
+			if(time) ends.push(')*' + time)
 		}else if(txt){
 			starts.push(txt);
 			ends.unshift('');
