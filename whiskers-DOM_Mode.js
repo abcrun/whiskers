@@ -22,7 +22,7 @@
 
 	var ID = new RegExp('#(' + characterEncoding + ')');
 	var CLASS = new RegExp('\\.(' + characterEncoding + '|' + token  + ')');
-	var ATTR = new RegExp('\\[' + whitespace + '*(' + characterEncoding + ')' + whitespace + '*=' + whitespace + '*((?:' + token.replace('?','') + '|' + characterEncoding.replace('w','w\\."\':;') +'))' + whitespace + '*\\]');// ':;' is for style attributes [style=color:red;font-size:12px;]
+	var ATTR = new RegExp('\\[' + whitespace + '*(' + characterEncoding + ')' + whitespace + '*=' + whitespace + '*((?:' + token.replace('?','') + '|' + characterEncoding.replace('w','w\\."\':;\\/@\\?&#') +'))' + whitespace + '*\\]');// ':;' is for style attributes [style=color:red;font-size:12px;]
 	var rBracket = new RegExp('^' + whitespace + '*\\(((?:\\\\.|[^\\\\])*)\\)' + whitespace + '*');
 
 	var TEMPLATE = new RegExp('^' + whitespace + '*' + '(' + '(?:\\\\.|[^\\\\()])+' + ')' + whitespace + '*>' + whitespace + '*(' + '(?:\\\\.|[^\\\\()>])+|\\((?:\\\\.|[^\\\\])+\\)' + ')' + whitespace + '*$');
