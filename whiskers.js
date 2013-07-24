@@ -2,7 +2,7 @@
 * Javascript Templating Engine (Selector Styles) - A New Way To Deal With Templates 
 * The MIT License - Copyright (c) 2013 Hongbo Yang <abcrun@gmail.com>
 * Repository - https://github.com/abcrun/whiskers.git
-* Version - 0.4.0
+* Version - 0.4.1
 */
 
 (function(name,factory){
@@ -15,13 +15,20 @@
 	// http://www.w3.org/TR/css3-syntax/#characters
 	var characterEncoding = '(?:\\\\.|[\\w-]|[^\\x00-\\xa0])+';
 
-	var token = '\\{\\{=(\\$?' + characterEncoding.replace('w','w\\[\\]\\.\\*\'" ') + ')\\}\\}';
+	var token = '\\{\\{=(\\$?' + characterEncoding.replace('w','w\\[\\]\\.\\*\'" \\(\\)>\\+') + ')\\}\\}';//text node may contains "(" ")" ">" "+"
 	var varReg = new RegExp(token.replace('?',''),'g');
 	var conReg = new RegExp(token.replace('\\$?',''),'g');
 
 	var ID = new RegExp('#(' + characterEncoding + '|' + token + ')');
 	var CLASS = new RegExp('\\.(' + characterEncoding + '|' + token  + ')');
-	var ATTR = new RegExp('\\[' + whitespace + '*(' + characterEncoding + ')' + whitespace + '*=' + whitespace + '*([\'"]?)((?:' + token.replace('?','') + '|' + characterEncoding.replace('w','w\\."\':;\\/@\\?&#') +'))\\2' + whitespace + '*\\]');// ':;' is for style attributes [style=color:red;font-size:12px;] '\\/#@&\\?'for [href="http://abcrun:pwd@abcrun.github.com/test?abc=1&efg=2#frag"]
+    //Special values in attributes
+    //URL - scheme://user:password@host:port/path;params?query#frag
+    //STYLE - name1:value1;name2:value2
+    //Others - [href="javascript:void(0)"]
+	var ATTR = new RegExp('\\[' + whitespace + '*(' + characterEncoding + ')' + whitespace + '*=' + whitespace + '*([\'"]?)((?:' + token.replace('?','') + '|' + characterEncoding.replace('w','w\\."\':\\/@;\\?&#\(\)') +'))\\2' + whitespace + '*\\]'); 
+
+    //Judege the character whether is a token
+    var notToken = new RegExp('(?:\\[' + whitespace + '*' + characterEncoding + whitespace + '*=' + whitespace + '*[^\\]]+|\\{\\{=[^\\}]+)$')
 
 	var NODE = new RegExp('^' + whitespace + '*(' + characterEncoding + ')|(' + token + ')' + whitespace + '*');
 
@@ -33,27 +40,39 @@
 			result,results = [];
 		for(var i = 0;i < length;i++){
 			var char = str.charAt(i);
-			if(char == '(') brackets++;
-			if(char == ')') brackets--;
+            var isLast = false;
+            //For special character "(" ")" ">" "+" or the last character
+            //Judge whether it is a token
+            if(/[\(\)>\+]/.test(char) || (isLast = (i == length - 1))){
+                var tempStr = temp.join('');
+                if(notToken.test(tempStr)){
+                    temp.push(char);
+                }else{
+                    if(char == '(') brackets++;
+                    if(char == ')') brackets--;
 
-			if(brackets){
-				if((brackets == 1 && char != '(') || brackets != 1) temp.push(char);
-			}else{
-				if(char != ')' && char != '+' && char != '>') temp.push(char);
-				if(char == ')'){
-					starts.push(analysis(temp.join('')));
-				}else if(char == '>' || char == '+' || i == length - 1){
-					result = format(temp.join(''));
-					starts.push(result[0]);
-					ends.unshift(result[1]);
-					temp = [];
-					if(char == '+'){
-						results.push(starts.join('') + ends.join(''));
-						starts = [];
-						ends = [];
-					}
-				}
-			}
+                    if(brackets){
+                        if((brackets == 1 && char != '(') || brackets != 1) temp.push(char);
+                    }else{
+                        if(char == ')'){
+                            starts.push(analysis(tempStr));//If brackets is 0 recurse.
+                        }else if(char == '>' || char == '+' || i == length - 1){
+                            if(isLast) tempStr += char;//For the last character, We need add it to the string before format it
+                            result = format(tempStr);
+                            starts.push(result[0]);
+                            ends.unshift(result[1]);
+                            if(char == '+'){
+                                results.push(starts.join('') + ends.join(''));
+                                starts = [];
+                                ends = [];
+                            }
+                        }
+                        temp = [];
+                    }
+                }
+            }else{
+                temp.push(char);
+            }
 		}
 		
 		results.push(starts.join('') + ends.join(''));

@@ -10,7 +10,7 @@
 <script type="text/javascript" src="../whiskers-min.js"></script>
 <script type="text/javascript">
 var d = new Date().getTime();
-var data = Whiskers.render('ul>li*4>(a>(span>{{=First}}+em) + span[url="www.sohu.com"]>{{=Second}} + span>{{=Third}})')
+var data = Whiskers.render('ul>li*4>(a[href="javascript:void(0)"]>(span>{{=First}}+em) + span[url="www.sohu.com"]>{{=Second}} + span>{{=Third(A+B>C)}})')
 document.getElementById('test').innerHTML = data;
 console.log('耗时:' + (new Date().getTime() - d) + 'ms')
 </script>

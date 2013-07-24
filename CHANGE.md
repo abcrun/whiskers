@@ -17,3 +17,5 @@
 	* Fix bug of treating attributes such as [class=test][style=color:red].
 ### Version (0.4.0)
 	* Rebuild the template rendering function - String Mode.
+### Version (0.4.1)
+	* Deal with the special tokens ocurr in the attributes or text node.
