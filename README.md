@@ -1,7 +1,7 @@
 #whiskers.js
 
 	写在前面：由于Selector API语法可能不易阅读，所以下一个版本将会考虑增加对VM语法的支持。
-	关于velocity语法在JS上的应用，github上发现已经有兄弟实现了，具体参考：https://github.com/shepherdwind/velocity.js。
+	关于velocity语法在JS上的应用，github上发现已经有兄弟实现了：https://github.com/shepherdwind/velocity.js
 
 whiskers.js是一个Javascript模板组件，它可以用来将一段 **特殊标记的字符串(whiskers模板<sup>见下文</sup>)** 转换为相应的HTML代码。
 
