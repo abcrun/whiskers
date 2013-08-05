@@ -56,24 +56,6 @@ whiskers.js是一个Javascript模板组件，它可以用来将一段 **特殊�
 		div#wrapper>ul.lists[data-type=news]>li*2>span>{{=Hello World}}	
 	</script>
 
-然而对于那些很长且NODE之间关系复杂的HTML结构，按照以上方法直接定义时，我们会发现容易让人混淆，而且也不易阅读，因此whiskers.js为之定义了一系列的函数，用于创建模板（方法类似于创建DOM元素）：
-
-	var template = Whiskers.create(template);//创建模板
-	template.append(tmpl);//将tmpl添加为template的最后一个子元素
-	template.prepend(tmpl);//将tmpl添加为template的第一个子元素
-	template.toString();//将template转换成字符串
-
-通过这些方法，我们可以重新定义whiskers模板：
-
-	var template = 'div#wrapper>ul.lists[data-type=news]>li*2>span>{{=Hello World}}'
-	//相当于
-	var template = Whiskers.create('div#wrapper'),
-	    ul = Whiskers.create('ul.lists[data-type=news]'),
-	    lis = Whiskers.create('li*2');
-	lis.append('span>{{=Hello World}}');
-	ul.append(lis);
-	template.append(ul);
-
 ###### 关于变量
 
 拿后端来说，程序可以从数据库获取数据，并将其输出到WEB页面。同理Javascript可以通过与后台交互（如异步请求等）获取数据，将这些数据按照 **whikers模板** 规则组合成HTML字符串，回填到页面中。而这里说的 **变量** 就是用来表示获取到的数据。
