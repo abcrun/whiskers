@@ -1,7 +1,7 @@
 {
   "name": "whiskers",
   "description": "selector styles template engine - A New Way To Deal With Template",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "keywords": ["whiskers","template","templates","templating","selector","Javascript"],
   "author": "Hongbo Yang <abcrun@gmail.com>",
   "repository": {
