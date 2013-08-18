@@ -63,9 +63,8 @@ whiskers.js是一个Javascript模板组件，它可以用来将一段 **特殊�
 示例：
 
 	{
-			title:'whiskers',
-			keywords:['whiskers','template']
-		}
+		title:'whiskers',
+		keywords:['whiskers','template']
 	}
 
 `$.keywords.0` 或者 `$['keywords'][0]` 相当于以上对象中的 'whiskers'
