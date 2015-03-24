@@ -1,8 +1,6 @@
 #whiskers.js
 
-whiskers.js是一个Javascript模板组件，它可以用来将一段 **特殊标记的字符串(whiskers模板<sup>见下文</sup>)** 转换为相应的HTML代码。
-
-随着AJAX的兴起，一些服务器端的工作转移到了客户端上。以微博为例，客户端向服务器发送请求来获取最新消息，当客户端收到最新的消息后，会将这些数据按照一定的结构组装成HTML代码，然后回填到页面中。而whiskers.js就是可以用来将从后台获取到数据按照设定好的HTML结构( **whiskers模板<sup>见下文</sup>** )转换成HTML代码的模板组件。
+whiskers.js是一个Javascript模板组件，它可以用来将一段 **特殊标记的字符串(whiskers模板<sup>见下文</sup>)** 转换为相应的HTML代码，如果你熟悉Zen Coding，那么对whiskers自然不会陌生。
 
 下面是一个简单的示例：
 
@@ -116,7 +114,5 @@ whiskers.js是一个Javascript模板组件，它可以用来将一段 **特殊�
 	</ul>
 
 ### 许可协议
-
-Copyright (c) 2013 Hongbo Yang <abcrun@gmail.com>
 
 The MIT License
